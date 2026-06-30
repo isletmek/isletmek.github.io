@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>İş Profili — Lansman Brifi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16201f;--paper:#f6f3ec;--paper-2:#efeae0;--line:#d8d1c2;--muted:#5d655f;
+    --amber:#c9711d;--amber-soft:#f3e2cf;--teal:#1f5e57;--plum:#5a4763;--good:#2f6b3c;--bad:#a3402f;--radius:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:40px 22px 140px}
+
+  header.hero{margin-bottom:34px}
+  .eyebrow{font-family:"Space Grotesk";font-weight:600;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber)}
+  h1{font-family:"Space Grotesk";font-weight:700;line-height:1.05;font-size:clamp(2rem,6vw,3.1rem);margin:.25em 0 .35em;letter-spacing:-.01em}
+  .hero p{color:var(--muted);max-width:54ch;margin:0;font-size:1.02rem}
+
+  .branch{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:30px 0 8px}
+  .branch button{all:unset;cursor:pointer;border:1.5px solid var(--line);border-radius:var(--radius);padding:20px 18px;background:#fff;transition:.18s;display:block}
+  .branch button:hover{border-color:var(--ink);transform:translateY(-2px)}
+  .branch .tag{font-family:"Space Grotesk";font-weight:600;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .branch .ttl{font-family:"Space Grotesk";font-weight:600;font-size:1.18rem;margin:.3em 0 .15em}
+  .branch .sub{font-size:.9rem;color:var(--muted)}
+  .branch button[data-on="service"]:hover{border-color:var(--plum)}
+  .branch button[data-on="ecom"]:hover{border-color:var(--teal)}
+  .branch button.sel[data-on="service"]{border-color:var(--plum);background:#f7f3f8;box-shadow:0 0 0 3px #ece1f0}
+  .branch button.sel[data-on="ecom"]{border-color:var(--teal);background:#f1f6f4;box-shadow:0 0 0 3px #d9ebe6}
+
+  form{display:none;margin-top:14px}
+  form.live{display:block}
+  .sec{border-top:1px solid var(--line);padding:26px 0 6px;margin-top:8px}
+  .sec:first-of-type{border-top:none}
+  .sec h2{font-family:"Space Grotesk";font-weight:600;font-size:1.06rem;margin:0 0 4px;display:flex;align-items:baseline;gap:10px}
+  .sec h2 .n{font-size:.78rem;color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums}
+  .sec .hint{color:var(--muted);font-size:.86rem;margin:0 0 18px}
+
+  .field{margin:0 0 18px}
+  .field > label{display:block;font-weight:500;margin-bottom:6px;font-size:.95rem}
+  .field .note{font-weight:400;color:var(--muted);font-size:.82rem}
+  input[type=text],input[type=number],textarea,select{width:100%;font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;transition:.15s}
+  textarea{min-height:84px;resize:vertical;line-height:1.5}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
+  select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235d655f' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+
+  .radios{display:flex;flex-wrap:wrap;gap:8px}
+  .radios label{border:1.5px solid var(--line);border-radius:999px;padding:8px 15px;cursor:pointer;font-size:.9rem;transition:.15s;user-select:none}
+  .radios input{position:absolute;opacity:0;pointer-events:none}
+  .radios label:has(input:checked){border-color:var(--ink);background:var(--ink);color:var(--paper)}
+  .radios label:hover{border-color:var(--ink)}
+
+  .branch-only{display:none}
+  form[data-tip="service"] .only-service{display:block}
+  form[data-tip="ecom"] .only-ecom{display:block}
+  .cond{display:none;margin-top:10px}
+  .cond.show{display:block}
+
+  .bar{position:fixed;left:0;right:0;bottom:0;background:rgba(246,243,236,.92);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:14px 22px;display:none;z-index:30}
+  .bar.live{display:block}
+  .bar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:16px}
+  .meter{flex:1;min-width:0}
+  .meter .track{height:6px;background:var(--paper-2);border-radius:99px;overflow:hidden}
+  .meter .fill{height:100%;width:0;background:var(--amber);transition:width .3s}
+  .meter small{color:var(--muted);font-size:.78rem;display:block;margin-top:5px}
+  .btn{all:unset;cursor:pointer;font-family:"Space Grotesk";font-weight:600;background:var(--ink);color:var(--paper);padding:12px 22px;border-radius:11px;white-space:nowrap;transition:.15s}
+  .btn:hover{background:#000}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+
+  /* gönderim sonucu — kullanıcı dosyayı GÖRMEZ, sadece durum görür */
+  .result{display:none;margin-top:30px;border-radius:var(--radius);padding:26px 22px;text-align:center;border:1.5px solid var(--line)}
+  .result.show{display:block}
+  .result.ok{border-color:var(--good);background:#f0f6f1}
+  .result.err{border-color:var(--bad);background:#f8efed}
+  .result h3{font-family:"Space Grotesk";margin:0 0 6px;font-size:1.2rem}
+  .result p{margin:0;color:var(--muted)}
+
+  @media(max-width:540px){.branch{grid-template-columns:1fr}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="eyebrow">Lansman Brifi · v3</span>
+    <h1>Fikrini birkaç<br>dakikada anlat, gönder.</h1>
+    <p>Formu doldur, "Brifi gönder"e bas. Kendi Gmail'in hazır şekilde açılır —
+       sadece "Gönder"e basarsın. Gerisini biz hallederiz: isim, logo, site, reklam, yol haritası.</p>
+  </header>
+
+  <div class="branch">
+    <button type="button" data-on="service">
+      <span class="tag">Yol A</span>
+      <div class="ttl">Hizmet satıyorum</div>
+      <div class="sub">Danışmanlık, ajans, freelance, kurs, atölye, yerel hizmet…</div>
+    </button>
+    <button type="button" data-on="ecom">
+      <span class="tag">Yol B</span>
+      <div class="ttl">Ürün satıyorum</div>
+      <div class="sub">E-ticaret: fiziksel/dijital ürün, el yapımı, mağaza…</div>
+    </button>
+  </div>
+
+  <form id="f">
+
+    <section class="sec">
+      <h2><span class="n">01</span> Temel</h2>
+      <p class="hint">Kısa tut, net tut. Süslemeye gerek yok.</p>
+      <div class="field">
+        <label>İşini tek cümleyle anlat <span class="note">— "X yapan kişilere Y sunuyorum" formatı işe yarar</span></label>
+        <textarea name="tek_cumle" placeholder="Örn: Küçük kafelere düşük bütçeli Instagram içeriği üretiyorum."></textarea>
+      </div>
+      <div class="field">
+        <label>İsim durumu</label>
+        <div class="radios" data-cond="isim">
+          <label><input type="radio" name="isim_durum" value="hazir"><span>İsmim hazır</span></label>
+          <label><input type="radio" name="isim_durum" value="oner"><span>İsim önerilsin</span></label>
+        </div>
+        <div class="cond" id="cond-isim" style="margin-top:10px">
+          <input type="text" name="isim" placeholder="İş / marka ismin">
+        </div>
+      </div>
+      <div class="field">
+        <label>Neden bu iş? <span class="note">— motivasyon / misyon, bir iki cümle</span></label>
+        <textarea name="misyon" placeholder="Bu işi neden yapıyorsun, kime ne faydası var?"></textarea>
+      </div>
+      <div class="field">
+        <label>Hangi aşamadasın?</label>
+        <select name="asama">
+          <option value="">Seç…</option>
+          <option>Sadece fikir aşaması</option>
+          <option>Prototip / test ettim</option>
+          <option>Satışa hazırım, henüz başlamadım</option>
+          <option>Halihazırda satıyorum</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Nerede, hangi dilde?</label>
+        <select name="cografya">
+          <option value="">Seç…</option>
+          <option>Yerel (tek şehir/bölge)</option>
+          <option>Türkiye geneli</option>
+          <option>Global / yurt dışı dahil</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2><span class="n">02</span> Hedef kitle</h2>
+      <p class="hint">"Herkes" demek "kimse" demek. Spesifik ol.</p>
+      <div class="field">
+        <label>Kimler bunlar? <span class="note">— yaş, durum, ihtiyaç, içinde bulundukları sıkıntı</span></label>
+        <textarea name="kitle_kim" placeholder="Örn: 25-40 yaş, küçük işletme sahibi, sosyal medyaya vakti olmayan…"></textarea>
+      </div>
+      <div class="field">
+        <label>Onları nerede buluyorsun / nerede vakit geçiriyorlar?</label>
+        <input type="text" name="kitle_nerede" placeholder="Instagram, yerel pazar, LinkedIn, Google'da arama…">
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2><span class="n">03</span> Farkın</h2>
+      <p class="hint">Bu bölüm jenerik çıktıyı kıran yer. Boş geçme.</p>
+      <div class="field">
+        <label>Rakipler kim?</label>
+        <input type="text" name="rakip" placeholder="İsim ver, yoksa 'şuna benzer işler yapanlar'">
+      </div>
+      <div class="field">
+        <label>Neden seni seçsinler? <span class="note">— senin somut farkın</span></label>
+        <textarea name="fark" placeholder="Daha ucuz / daha hızlı / niş bir konuda uzman / kişisel ilgi…"></textarea>
+      </div>
+    </section>
+
+    <section class="sec branch-only only-service">
+      <h2><span class="n">04</span> Hizmet detayı</h2>
+      <p class="hint">Sadece hizmet yolu için.</p>
+      <div class="field"><label>Hangi hizmet ve nasıl teslim ediliyor?</label>
+        <textarea name="s_hizmet" placeholder="Ne yapıyorsun + online mı, yüz yüze mi, hibrit mi?"></textarea></div>
+      <div class="field"><label>Fiyatlandırma modeli</label>
+        <select name="s_fiyat"><option value="">Seç…</option><option>Saatlik</option><option>Proje bazlı</option><option>Paket / sabit fiyat</option><option>Aylık abonelik</option><option>Henüz belli değil</option></select></div>
+      <div class="field"><label>Kapasite</label>
+        <select name="s_kapasite"><option value="">Seç…</option><option>Tek başımayım</option><option>Küçük ekip</option></select></div>
+      <div class="field"><label>Şu an müşteriyi nasıl buluyorsun?</label>
+        <input type="text" name="s_musteri" placeholder="Tavsiye, sosyal medya, reklam, henüz hiç…"></div>
+      <div class="field"><label>Sitenin asıl amacı ne olsun?</label>
+        <select name="s_site_amac"><option value="">Seç…</option><option>Teklif / lead toplamak</option><option>Randevu aldırmak</option><option>Portfolyo + güven vermek</option></select></div>
+    </section>
+
+    <section class="sec branch-only only-ecom">
+      <h2><span class="n">04</span> Ürün detayı</h2>
+      <p class="hint">Sadece e-ticaret yolu için.</p>
+      <div class="field"><label>Ürün ne?</label>
+        <textarea name="e_urun" placeholder="Ne satıyorsun, kısaca anlat."></textarea></div>
+      <div class="field"><label>Kaç çeşit ürün var? <span class="note">— yaklaşık SKU sayısı</span></label>
+        <input type="text" name="e_sku" placeholder="1, 5-10, 50+ …"></div>
+      <div class="field"><label>Fiziksel mi, dijital mi?</label>
+        <select name="e_tip"><option value="">Seç…</option><option>Fiziksel ürün</option><option>Dijital ürün</option><option>İkisi de</option></select></div>
+      <div class="field"><label>Tedarik / üretim</label>
+        <select name="e_tedarik"><option value="">Seç…</option><option>Kendim üretiyorum / el yapımı</option><option>Toptan alıp satıyorum</option><option>Dropshipping</option><option>Üretici ile çalışıyorum</option></select></div>
+      <div class="field"><label>Satış kanalı tercihi <span class="note">— bu site mimarisini belirliyor</span></label>
+        <select name="e_kanal"><option value="">Seç…</option><option>Kendi sitem olsun</option><option>Kurulu platform (Trendyol, Etsy, Shopify, Dolap vb.)</option><option>İkisi birden</option></select></div>
+      <div class="field"><label>Fiyat aralığı / kâr marjı <span class="note">— biliyorsan</span></label>
+        <input type="text" name="e_fiyat" placeholder="Örn: 150-400 TL, marj ~%40 (opsiyonel)"></div>
+      <div class="field"><label>Kargo & stok düşünüldü mü?</label>
+        <input type="text" name="e_lojistik" placeholder="Evde stok, kargo anlaşması, henüz yok…"></div>
+    </section>
+
+    <section class="sec">
+      <h2><span class="n">05</span> Marka & estetik</h2>
+      <p class="hint">Logo ve sitenin hissini buradan kuruyoruz.</p>
+      <div class="field"><label>Marka tonu</label>
+        <select name="ton"><option value="">Seç…</option><option>Minimal / sade</option><option>Sıcak / samimi</option><option>Lüks / premium</option><option>Oyuncu / eğlenceli</option><option>Teknik / ciddi</option></select></div>
+      <div class="field"><label>Renk / his tercihi</label>
+        <input type="text" name="renk" placeholder="Sevdiğin renkler ya da verdiği his (sıcak, ferah, koyu…)"></div>
+      <div class="field"><label>Beğendiğin bir marka / site örneği</label>
+        <input type="text" name="ornek" placeholder="'Şununki gibi olsun' diyebileceğin bir örnek"></div>
+    </section>
+
+    <section class="sec">
+      <h2><span class="n">06</span> Site & bütçe</h2>
+      <div class="field"><label>Kendi siten mi üretilsin, yoksa kurulu platforma mı kurulsun?</label>
+        <div class="radios">
+          <label><input type="radio" name="site_tercih" value="kendi"><span>Kendi sitem üretilsin</span></label>
+          <label><input type="radio" name="site_tercih" value="platform"><span>Kurulu platforma kurulsun</span></label>
+        </div></div>
+      <div class="field"><label>Başlangıç bütçen <span class="note">— opsiyonel</span></label>
+        <select name="butce"><option value="">Seç…</option><option>Sıfıra yakın</option><option>Düşük (birkaç bin TL)</option><option>Orta</option><option>Esnek</option></select></div>
+    </section>
+
+    <section class="sec">
+      <h2><span class="n">07</span> Serbest kürsü</h2>
+      <p class="hint">Forma sığmayan ne varsa.</p>
+      <div class="field"><label>Eklemek istediğin her şey</label>
+        <textarea name="serbest" placeholder="Kısıtlar, hayaller, 'şunu kesinlikle istemiyorum'lar…"></textarea></div>
+    </section>
+
+    <div class="result" id="result">
+      <h3 id="resTitle"></h3>
+      <p id="resMsg"></p>
+    </div>
+
+  </form>
+</div>
+
+<div class="bar" id="bar">
+  <div class="bar-in">
+    <div class="meter">
+      <div class="track"><div class="fill" id="fill"></div></div>
+      <small id="meterTxt">Başlamak için bir yol seç.</small>
+    </div>
+    <button type="button" class="btn" id="sendBtn">Brifi gönder</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ====== AYARLAR (istersen burayı değiştir) ====== */
+  var TO_EMAIL = "metinmetin1558@gmail.com";   // brifin gideceği adres
+  var SUBJECT  = "Yeni İş Profili Brifi";      // sabit konu
+  var ACIKLAMA = "Bu brif, iş profili formundan oluşturuldu. Aşağıda tüm bilgiler markdown formatında.";
+  /* ================================================ */
+
+  var form = document.getElementById('f');
+  var bar  = document.getElementById('bar');
+  var sendBtn = document.getElementById('sendBtn');
+  var tip = null, sent = false;
+
+  document.querySelectorAll('.branch button').forEach(function(b){
+    b.addEventListener('click', function(){
+      tip = b.dataset.on;
+      document.querySelectorAll('.branch button').forEach(function(x){x.classList.remove('sel')});
+      b.classList.add('sel');
+      form.dataset.tip = tip; form.classList.add('live'); bar.classList.add('live');
+      updateMeter(); b.scrollIntoView({block:'start'});
+    });
+  });
+
+  document.querySelectorAll('[data-cond="isim"] input').forEach(function(r){
+    r.addEventListener('change', function(){
+      document.getElementById('cond-isim').classList.toggle('show', r.value==='hazir' && r.checked);
+    });
+  });
+
+  function updateMeter(){
+    if(!tip) return;
+    var groups={}, total=0, done=0;
+    form.querySelectorAll('input,textarea,select').forEach(function(el){
+      var sec = el.closest('.branch-only');
+      if(sec){
+        if(sec.classList.contains('only-service') && tip!=='service') return;
+        if(sec.classList.contains('only-ecom') && tip!=='ecom') return;
+      }
+      if(el.type==='radio'){
+        if(!groups[el.name]){ groups[el.name]=true; total++;
+          if(form.querySelector('input[name="'+el.name+'"]:checked')) done++; }
+      } else { total++; if(el.value.trim()!=='') done++; }
+    });
+    var pct = total? Math.round(done/total*100):0;
+    document.getElementById('fill').style.width = pct+'%';
+    document.getElementById('meterTxt').textContent = done+' / '+total+' alan dolu · %'+pct;
+  }
+  form.addEventListener('input', updateMeter);
+  form.addEventListener('change', updateMeter);
+
+  function v(name){
+    var el = form.elements[name];
+    if(!el) return '';
+    if(el.length && el[0] && el[0].type==='radio'){
+      var c = form.querySelector('input[name="'+name+'"]:checked'); return c? c.value : '';
+    }
+    return (el.value||'').trim();
+  }
+  function line(l,val){ return '- **'+l+':** '+(val?val:'—')+'\n'; }
+
+  function buildMd(){
+    var d=new Date();
+    var stamp=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    var tipTr = tip==='service'?'Hizmet':'E-ticaret';
+    var isim = v('isim_durum')==='hazir'? v('isim') : '(önerilsin)';
+    var md='# İş Profili Brifi\n\n';
+    md+='> Bu dosya formdan üretildi. Claude\'a meta-prompt ile birlikte verilecek.\n\n';
+    md+='- **İş tipi:** '+tipTr+'\n- **Tarih:** '+stamp+'\n\n';
+    md+='## 01 · Temel\n'+line('Tek cümle',v('tek_cumle'))+line('İsim',isim)+line('Misyon / neden',v('misyon'))+line('Aşama',v('asama'))+line('Coğrafya & dil',v('cografya'));
+    md+='\n## 02 · Hedef kitle\n'+line('Kim',v('kitle_kim'))+line('Nerede bulunuyor',v('kitle_nerede'));
+    md+='\n## 03 · Farklılaşma\n'+line('Rakipler',v('rakip'))+line('Fark / neden seni seçsinler',v('fark'));
+    if(tip==='service'){
+      md+='\n## 04 · Hizmet detayı\n'+line('Hizmet & teslim',v('s_hizmet'))+line('Fiyat modeli',v('s_fiyat'))+line('Kapasite',v('s_kapasite'))+line('Müşteri kaynağı',v('s_musteri'))+line('Site amacı',v('s_site_amac'));
+    } else {
+      md+='\n## 04 · Ürün detayı\n'+line('Ürün',v('e_urun'))+line('Çeşit / SKU',v('e_sku'))+line('Fiziksel/Dijital',v('e_tip'))+line('Tedarik',v('e_tedarik'))+line('Satış kanalı',v('e_kanal'))+line('Fiyat / marj',v('e_fiyat'))+line('Kargo & stok',v('e_lojistik'));
+    }
+    md+='\n## 05 · Marka & estetik\n'+line('Ton',v('ton'))+line('Renk / his',v('renk'))+line('Beğenilen örnek',v('ornek'));
+    md+='\n## 06 · Site & bütçe\n'+line('Site tercihi', v('site_tercih')==='kendi'?'Kendi sitesi üretilsin':(v('site_tercih')==='platform'?'Kurulu platforma kurulsun':''))+line('Bütçe',v('butce'));
+    md+='\n## 07 · Serbest\n'+line('Ek notlar',v('serbest'));
+    return md;
+  }
+
+  function showResult(ok,title,msg){
+    var r=document.getElementById('result');
+    r.className='result show '+(ok?'ok':'err');
+    document.getElementById('resTitle').textContent=title;
+    document.getElementById('resMsg').textContent=msg;
+    r.scrollIntoView({block:'center'});
+  }
+
+  sendBtn.addEventListener('click', function(){
+    var md = buildMd();
+    var body = ACIKLAMA + '\n\n' + md;
+    var gmail = 'https://mail.google.com/mail/?view=cm&fs=1'
+      + '&to=' + encodeURIComponent(TO_EMAIL)
+      + '&su=' + encodeURIComponent(SUBJECT)
+      + '&body=' + encodeURIComponent(body);
+
+    // kullanıcı hareketi içinde anchor click → pop-up engelleyiciye takılmaz
+    var a = document.createElement('a');
+    a.href = gmail; a.target = '_blank'; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+
+    showResult(true,'Gmail açıldı ✓',
+      'E-postan hazır şekilde yeni sekmede açıldı — sadece "Gönder"e bas. Açılmadıysa pop-up iznini ver, "Brifi gönder"e tekrar bas.');
+  });
+})();
+</script>
+</body>
+</html>
